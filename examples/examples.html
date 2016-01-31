@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>walk.js demonstration</title>
+    <script type="text/javascript" src="lib/angular.min.js"></script>
+    <script type="text/javascript" src="walkExamples.js"></script>
+
+    <style type="text/css">
+        body{
+            background-color: #EEEEEE;
+        }
+        .app{
+            width: 900px;
+            background-color: #FFFFFF;
+            margin: auto;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: .8em;
+        }
+        .tabs{
+            width: 100%;
+        }
+        .tab{
+            display: inline-block;
+            height: 100%;
+            padding: 8px;
+            margin: 3px;
+            cursor: pointer;
+            font-size: .8em;
+        }
+        .selected{
+            color: #FFFFFF;
+            background-color: #444444;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app" ng-app="walkExamples" ng-controller="mainController">    
+    <div class="tabs">
+        <div ng-click="state = 'tree'" 
+             class="tab"
+             ng-class="state == 'tree' ? 'selected' : ''">
+             <span>TREE</span>
+        </div>
+        <div ng-click="state = 'graph'" 
+             class="tab"
+             ng-class="state == 'graph' ? 'selected' : ''">
+             <span>GRAPH</span>
+        </div>
+    </div>
+    <div class="content">
+
+        <!-- tree -->
+        <div ng-if="state === 'tree'">
+            
+        </div>
+
+
+        <!-- graph -->
+        <div ng-if="state === 'graph'">
+            
+        </div>
+
+
+    </div>
+</div>
+
+</body>
+</html>

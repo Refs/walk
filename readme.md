@@ -68,7 +68,7 @@ The primary method for traversing an object and injecting callbacks into the tra
 - ```pathFormat```: a function that returns a path segment from a key (object key string or array index). The first argument is the key and the second argument is a boolean that is ```true``` when the key is an array index, ```false``` when it is a object key.
 - ```callbacks```: an array of callback objects. See the Callback section for more information.
 - ```traversalMode```: the mode for traversing the tree. Options are ```depth``` for *depth-first* processing and ```breadth``` for *breadth-first* processing.
-- ```dataStructure```: if the object that gets passed in doesn't comply with this configuration setting, an error will occur. Options are ```finiteTree``` (default), ```graph```, and ```infinite```. Finite trees will error if an object/array reference is encountered more than once. Graphs will only process object/array references one time. Finite trees will always continue to process - use ```walk.break()``` to end the processing manually. *Warning: ininite trees will never complete processing if a callback doesn't call ```Walk.break()```.*
+- ```dataStructure```: if the object that gets passed in doesn't comply with this configuration setting, an error will occur. Options are ```finiteTree``` (default), ```graph```, and ```infinite```. Finite trees will error if an object/array reference is encountered more than once. Graphs will only process object/array references one time (node that properties related to parents, such as ```key```, are unreliable in graphs because a node could have muiltiple parents, thus multiple ```keys```.) Finite trees will always continue to process - use ```walk.break()``` to end the processing manually. *Warning: ininite trees will never complete processing if a callback doesn't call ```Walk.break()```.*
 
 
 The configuration defaults to the following. Note that you can edit this by overwriting ```Walk.configDefaults```:
@@ -95,7 +95,7 @@ configDefaults: {
 A shorthand version of ```walk()``` that runs the callback for all nodes, in ```postWalk``` mode.
 
 #### ```Walk.break()```:
-Calling this method within a callback will halt processing completely. This allows for early access, and limited processing of infinite trees.
+Calling this method within a callback will halt processing completely. This allows for early exit, and limited processing of infinite trees.
 
 #### ```Walk.flatten(object, key[, unique])```:
 Returns an array of values from an input key. For example, ```Walk.flatten(object, 'friends')``` will return all values in the tree who exist in objects and have a key of ```friends```. Set the optional ```unique``` parameter to ```true``` to only return unique values.
@@ -248,6 +248,8 @@ deepCopy: function(obj) {
 # Upcoming features
 
 - ```Walk.print(object)```: Prints a nested represented of the object.
-- Multiple parents support for graphs.
+- Multiple parents support for graphs
+- Abstracting of node relationshihp properties into more flexible objects
+- Specific support for directed/acyclic graphs and non-directed graphs.
 - Search functionality for parent and sibling nodes.
 - Removing the isRoot property, since this can be signaled via the absence of a parent.
