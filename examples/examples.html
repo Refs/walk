@@ -2,9 +2,13 @@
 <html>
 <head>
     <title>walk.js demonstration</title>
+    <script type="text/javascript" src="dataSmall.js"></script>
     <script type="text/javascript" src="lib/angular.min.js"></script>
+    <script type="text/javascript" src="lib/vis.min.js"></script>    
     <script type="text/javascript" src="walkExamples.js"></script>
+    <script type="text/javascript" src="../dist/walk.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="lib/vis.min.css"></script>
     <style type="text/css">
         body{
             background-color: #EEEEEE;
@@ -31,6 +35,11 @@
             color: #FFFFFF;
             background-color: #444444;
         }
+        #network{
+            width: 100%;
+            height: 600px;
+            border: 1px solid #cccccc;
+        }
     </style>
 </head>
 <body>
@@ -52,7 +61,7 @@
 
         <!-- tree -->
         <div ng-if="state === 'tree'">
-            
+            <div id="network"></div>
         </div>
 
 

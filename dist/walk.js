@@ -290,6 +290,8 @@
     }
 }(this));
 Walk.__data.idCounter = 0;
+Walk.__data.edgeIdCounter = 0;
+
 
 Walk.__exceptions.classNotFound = function(key) {
     throw "No associated class found for key: '" + key + "'.";
@@ -419,7 +421,7 @@ Walk.convert = function(object, className, key){
    return root;
 };
 
-Walk.nodeMap = function(object, className, key){
+Walk.nodeMap = function(object, className){
     var map = {};
     Walk.walk(object, className, {
         rootObjectCallbacks: true,
@@ -427,13 +429,14 @@ Walk.nodeMap = function(object, className, key){
             {
                 positions: ['postWalk'],
                 callback:function(node){
-                    map[node.uuid] = node;
+                    map[node.id] = node;
                 }
             }
         ]
     });
     return map;
 };
+
 
 Walk.flatten = function(object, key, unique) {
     //return array of values that match the key
@@ -496,10 +499,14 @@ Walk.deepCopy = function(obj) {
     });
     return newObj;
 };
+
+
+
 Walk.__classes.edge = function(tailNode, headNode, isDirected){
     this.head = headNode;
     this.tail = tailNode;
     this.directed = isDirected;
+    this.id = Walk.__data.edgeIdCounter++;
 
     // now set counts on the two nodes
     if (this.isDirected){
