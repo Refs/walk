@@ -116,7 +116,7 @@ Similar to ```Walk.flatten()```, this method returns all *values* who match with
 Convert and return the object with all values replaced by thier nodes. This structure means the object hierarchy will convert from something like ```data.house.rooms[0].squareFeet``` to ```data.val.house.val.rooms.val[0].val.squareFeet.val``` because it interjects a node in place of the value. Warning: this mangles the original object -- do a ```Walk.deepCopy()``` first to preserve it.
 
 #### ```Walk.nodeMap(object)```: 
-Returns an object map of **uuid**:**node**. Each node has a UUID -- accessing the nodeMap via ```nodeMap[uuid]``` will return the node. This allows for more direct access into the tree.
+Returns an object map of **id**:**node**. Each node has an ID -- accessing the nodeMap via ```nodeMap[id]``` will return the node. This allows for more direct access into the tree.
 
 #### ```Walk.updateObjectViaPathString(object, value, path, delimiter)```: 
 Sets the property on the ```object``` that is accessed via ```path``` to ```value```. The ```delimiter``` parameter is a string value that is used to seperate path nesting. For example, ```house-->rooms-->0-->squareFeet``` would have a delimiter of ```'-->'```. It should always match the ```pathFormat``` used when contructing nodes (see below) to ensure the path can be accessed.
