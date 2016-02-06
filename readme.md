@@ -68,27 +68,30 @@ The primary method for traversing an object and injecting callbacks into the tra
 - ```pathFormat```: a function that returns a path segment from a key (object key string or array index). The first argument is the key and the second argument is a boolean that is ```true``` when the key is an array index, ```false``` when it is a object key.
 - ```callbacks```: an array of callback objects. See the Callback section for more information.
 - ```traversalMode```: the mode for traversing the tree. Options are ```depth``` for *depth-first* processing and ```breadth``` for *breadth-first* processing.
-- ```dataStructure```: if the object that gets passed in doesn't comply with this configuration setting, an error will occur. Options are ```finiteTree``` (default), ```graph```, and ```infinite```. Finite trees will error if an object/array reference is encountered more than once. Graphs will only process object/array references one time (node that properties related to parents, such as ```key```, are unreliable in graphs because a node could have muiltiple parents, thus multiple ```keys```.) Finite trees will always continue to process - use ```walk.break()``` to end the processing manually. *Warning: ininite trees will never complete processing if a callback doesn't call ```Walk.break()```.*
+- ```structure```: Options are ```tree``` (default) and ```graph```. Graphs add nodes as "neighbors" rather than parent/child.
+- ```loopTolerance```: ```0```: Error if a node is encountered more than once. ```1```: Only error if a node has an acncestor node of itself (infinite loop). ```2```: Allow for all types of nesting. 
+- ```nodeVisitCount```: An integer that defines how many times to allow visits to nodes. (Only applicable to graphs.) Set to ```-1``` to allow infinite. Note that infinite trees will process indefinitely - use ```walk.break()``` in a callback to end the processing manually.
 
 
 The configuration defaults to the following. Note that you can edit this by overwriting ```Walk.configDefaults```:
 
 ```
-configDefaults: {    
-    logger: console,
+configDefaults: {
     classMap: {},
+    logger: console,
     traversalMode: 'depth',
-    enforceRootClass: false,
     strictClasses: false,
     rootObjectCallbacks: true,
     runCallbacks: true,
     monitorPerformance: false,
-    dataStructure: 'finiteTree',
+    nodeVisitCount: 1,
+    structure: "tree",
+    loopTolerance: 0,
     pathFormat: function(key, isArr) {
         return isArr ? '[' + key + ']' : '["' + key + '"]';
     },
     callbacks: []
-},
+}
 ```
 
 #### ```Walk.apply(object, callback)```:
@@ -173,17 +176,24 @@ Node objects represent a single node in the tree, providing metadata about the v
 - ```key```: The key of this property as defined on it's parent. For example, if this callback is running on the ```'weight'``` property of a ```person```, the ```key``` would be ```'weight'```. Note that this will be ```undefined``` for properties in arrays.
 - ```value```: The value of the property. To use the above example, the value would be something like ```'183'```.
 - ```className```: The className that the property matched on in the config's ```classMap```.
-- ```container```: The type of container the property is.
+- ```container```: The type of container of the property.
 - ```isRoot```: A boolean that is set to ```true``` if the property is a root object, otherwise ```false```.
-- ```uuid```: A unique id for the node (within the context of Walk);
+- ```id```: A unique id for the node (within the context of Walk);
 - ```callbacks```: An array of all the callback functions in the stack. Callback stacks are grouped by property and position. The current function *will* be included. A property is made available on each function via ```callbacks[index].__walk$_has_run``` which will be true if the function has run in the current stack. This property is only available during the callback stack execution, and is deleted immediately afterwards.
 - ```executedCallbacks```: An array of all callback functions that have already run on this property.
 - ```path``` The path to the value. For example, if the variable you're walking is named ```myObject```, the path will look something like ```["friends"][10]["friends"][2]["name"]```, such that calling ```myObject["friends"][10]["friends"][2]["name"]``` will return the ```val```. You can set the path format in the config (see ```pathFormat```).
-- ```parent```: The node under which the property exists. ```node.parent``` is another instance of node, and will have all the same properties. 
-- ```parents()```: A method that returns a list of all ancestor nodes, going back to the root.
-- ```children()```: A method that returns are direct children of a node (i.e. all nodes whose parent is this node.) An optional search parameters object can be passed in to filter the list to all who have matching key-values. For example, ```node.children({key: 'name', val: 'Tom'})``` will return all children where ```key === 'name'``` and ```val === 'Tom'```.
-- ```siblings()```: A method that returns all nodes that exist alongside the current node within the parent. For parents of container ```'object'```, this includes all other properties of the parent object. For parents of type ```'array'```, this includes all other nodes in that array. 
-- ```root()```: A method that returns the root node (defined by the first node without a parent).
+
+You may also call the following methods off of a node object:
+
+- ```isRoot```: Returns a boolean of whether the node is an orphan (no parents.)
+
+- ```parent()```: The first node under which the property exists. ```node.parent``` is another instance of node, and will have all the same properties. This is a convenience method that's useful in trees, where only one parent is possible.
+- ```parents()```: A method that returns parents of a node. An optional search parameters object can be passed in to filter the list to all who have matching key-values. For example, ```node.parents({key: 'name', val: 'Tom'})``` will return all parents where ```key === 'name'``` and ```val === 'Tom'```.
+- ```children()```: A method that returns children of a node (i.e. all nodes whose parent is this node.) An optional search parameters object can be passed in to filter the list to all who have matching key-values. For example, ```node.children({key: 'name', val: 'Tom'})``` will return all children where ```key === 'name'``` and ```val === 'Tom'```.
+- ```neighbors()```: A method that returns adjacent (non-parent, non-child) nodes, for use in graphs. An optional search parameters object can be passed in to filter the list to all who have matching key-values. For example, ```node.neighbors({key: 'name', val: 'Tom'})``` will return all neighbors where ```key === 'name'``` and ```val === 'Tom'```.
+- ```siblings()```: A method that returns all nodes that exist alongside the current node within its parents. For parents of container ```'object'```, this includes all other properties of the parent object. For parents of type ```'array'```, this includes all other nodes in that array. 
+- ```roots()```: A method that returns all connected root nodes.
+- ```ancestors()```: A method that returns a list of all ancestor nodes, going back to the root.
 
 # Examples
 
@@ -248,8 +258,7 @@ deepCopy: function(obj) {
 # Upcoming features
 
 - ```Walk.print(object)```: Prints a nested represented of the object.
-- Multiple parents support for graphs
-- Abstracting of node relationshihp properties into more flexible objects
+- Abstracting of node relationship properties into more flexible objects
 - Specific support for directed/acyclic graphs and non-directed graphs.
 - Search functionality for parent and sibling nodes.
 - Removing the isRoot property, since this can be signaled via the absence of a parent.

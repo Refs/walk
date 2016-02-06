@@ -195,7 +195,7 @@ var Walk = (function(window) {
             monitorPerformance: false,
             nodeVisitCount: 1,
             structure: "tree",
-            loopTolerance: 0, // 0 = tree, 1 = directed acyclic, 2 = graph
+            loopTolerance: 0,
             pathFormat: function(key, isArr) {
                 return isArr ? '[' + key + ']' : '["' + key + '"]';
             },
@@ -407,7 +407,7 @@ var Walk = (function(window) {
             }
         }
 
-        if ( node.encountered > Walk.__runtime.config.nodeVisitCount ){
+        if (Walk.__runtime.config.nodeVisitCount !== -1 && node.encountered > Walk.__runtime.config.nodeVisitCount ){
             return;
         }
 
