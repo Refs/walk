@@ -177,7 +177,7 @@ Node objects represent a single node in the tree, providing metadata about the v
 - ```value```: The value of the property. To use the above example, the value would be something like ```'183'```.
 - ```className```: The className that the property matched on in the config's ```classMap```.
 - ```container```: The type of container of the property.
-- ```isRoot```: A boolean that is set to ```true``` if the property is a root object, otherwise ```false```.
+- ```encountered```: The number of times the current walk has processed the node.
 - ```id```: A unique id for the node (within the context of Walk);
 - ```callbacks```: An array of all the callback functions in the stack. Callback stacks are grouped by property and position. The current function *will* be included. A property is made available on each function via ```callbacks[index].__walk$_has_run``` which will be true if the function has run in the current stack. This property is only available during the callback stack execution, and is deleted immediately afterwards.
 - ```executedCallbacks```: An array of all callback functions that have already run on this property.
@@ -185,8 +185,7 @@ Node objects represent a single node in the tree, providing metadata about the v
 
 You may also call the following methods off of a node object:
 
-- ```isRoot```: Returns a boolean of whether the node is an orphan (no parents.)
-
+- ```isRoot()```: Returns a boolean of whether the node is an orphan (no parents.)
 - ```parent()```: The first node under which the property exists. ```node.parent``` is another instance of node, and will have all the same properties. This is a convenience method that's useful in trees, where only one parent is possible.
 - ```parents()```: A method that returns parents of a node. An optional search parameters object can be passed in to filter the list to all who have matching key-values. For example, ```node.parents({key: 'name', val: 'Tom'})``` will return all parents where ```key === 'name'``` and ```val === 'Tom'```.
 - ```children()```: A method that returns children of a node (i.e. all nodes whose parent is this node.) An optional search parameters object can be passed in to filter the list to all who have matching key-values. For example, ```node.children({key: 'name', val: 'Tom'})``` will return all children where ```key === 'name'``` and ```val === 'Tom'```.
@@ -261,4 +260,3 @@ deepCopy: function(obj) {
 - Abstracting of node relationship properties into more flexible objects
 - Specific support for directed/acyclic graphs and non-directed graphs.
 - Search functionality for parent and sibling nodes.
-- Removing the isRoot property, since this can be signaled via the absence of a parent.
