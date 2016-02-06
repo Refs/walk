@@ -30,7 +30,6 @@ angular.module("walkExamples", [], function(){
             } else {
                 label = node.key;
             }
-
             visNodeData.push({
                 id: counter,
                 label: label

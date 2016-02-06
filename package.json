@@ -1,0 +1,31 @@
+{
+  "name": "walk",
+  "version": "1.0.0",
+  "description": "A library for traversing nested object structures.",
+  "main": "walk.min.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tckerr/walk.git"
+  },
+  "keywords": [
+    "javascript",
+    "object",
+    "traverse",
+    "walk",
+    "nodes",
+    "graph",
+    "graphs"
+  ],
+  "author": "Tom Kerr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tckerr/walk/issues"
+  },
+  "homepage": "https://github.com/tckerr/walk#readme"
+}

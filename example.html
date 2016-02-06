@@ -55,8 +55,20 @@
             <td><button onclick="replaceNames()">Do it!</button></td>
         </tr>
         <tr>
-            <td>Parse a graph.</td>
+            <td>Parse an acyclical graph.</td>
+            <td><button onclick="parseAcyclicalGraph()">Do it!</button></td>
+        </tr>
+        <tr>
+            <td>Parse a cyclical graph.</td>
             <td><button onclick="parseGraph()">Do it!</button></td>
+        </tr>
+        <tr>
+            <td>Parse each node in an infinite cycle 5 times, then exit.</td>
+            <td><button onclick="parseCycle()">Do it!</button></td>
+        </tr>
+        <tr>
+            <td>Run a performance test</td>
+            <td><button onclick="performanceTest()">Do it!</button></td>
         </tr>
     </table>
     <script type="text/javascript">
@@ -239,13 +251,13 @@
             Walk.walk(data, className, walkConfig);
         }
 
-        function parseGraph(){
+        function parseAcyclicalGraph(){
             var a = {description: "I am the lowest level item, with two parents."};
             var b = {bA: a, description: "I am a mid level item, with one parent and one child."};
             var c = {cA: a, description: "I am a mid level item, with one parent and one child."};
             var d = {dB: b, dC: c, description: "I am the top level item, with two children."};
             Walk.walk(d, undefined, {
-                dataStructure: 'graph',
+                loopTolerance: 1,                
                 callbacks: [
                     {
                         containers: ['object'],
@@ -258,7 +270,91 @@
             })
         }
 
+        function parseGraph(){
+            var a = {description: "I am a terminal node."};
+            var b = {description: "I am a terminal node."};
+            var c = {a: a, description: "I am connected to three other nodes."};
+            var d = {b: b, description: "I am connected to three other nodes."};
+            var e = {c: c, d: d, description: "I am connected to two other nodes."};
+            c.e = e;
+            d.e = e;
+
+            Walk.walk(e, undefined, {
+                loopTolerance: 1,
+                structure: "graph",
+                callbacks: [
+                    {
+                        containers: ['object'],
+                        callback: function(node){
+                            console.log(node);
+                        }
+                    }
+                ]
+                
+            })
+        }
+
+        function parseCycle(){
+            var a = {label: "A", runCount: 0};
+            var b = {A: a, label: "B", runCount: 0};
+            var c = {B: b, label: "C", runCount: 0};
+            a.C = c;
+            Walk.walk(a, undefined, {
+                nodeVisitCount: 5,
+                loopTolerance: 2,                
+                callbacks: [
+                    {
+                        containers: ['object'],
+                        callback: function(node){
+                            node.val.runCount++;
+                            console.log("Parsing object", node.val.label, "for the", node.val.runCount, "time.");
+                        }
+                    }
+                ]
+                
+            })
+        }
+
+        function performanceTest(){
+            console.log("Beginning performance test...");
+            var data = JSON.parse(document.getElementById('data').value);
+            var className = document.getElementById('label').value;
+            var postwalk = 0;
+            var prewalk = 0;
+
+            // create our callback configuration
+            var walkConfig = {
+                classMap: {
+                    "person": "person",
+                    "friends": "person"
+                },
+                callbacks: [
+                    {
+                        positions: ['preWalk'],
+                        callback: function(node){
+                            prewalk++;
+                        }
+                    },
+                    {
+                        positions: ['postWalk'],
+                        callback: function(node){
+                            postwalk++;
+                        }
+                    }
+               ]
+            }
+
+            var t = new Date();
+            for (var i = 0; i < 500; i++) {
+                Walk.walk(data, className, walkConfig);
+            };
+
+            console.log("Completed 500 runs in",  (new Date()-t)/1000 + 's');
+            console.log("prewalk counter:", prewalk, "postwalk counter:", postwalk);
+            
+        }
+
     </script>
-    <script src="dist/walk.js"></script>
+    <script src="walk.js"></script>
 </body>
 </html>
